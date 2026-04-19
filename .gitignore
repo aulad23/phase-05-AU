@@ -1,0 +1,31 @@
+# Excel & Data files
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+*.csv
+*.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+*.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
