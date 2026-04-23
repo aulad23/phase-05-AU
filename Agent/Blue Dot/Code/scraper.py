@@ -64,7 +64,9 @@ BASE_COLUMNS = [
     "Index", "Category", "Manufacturer", "Source", "Image URL",
     "Product Name", "SKU", "Product Family Id", "Description",
     "Weight", "Width", "Depth", "Diameter", "Height",
-    "Seat Width", "Seat Depth", "Seat Height", "Arm Height",
+    "Seat Width", "Seat Depth", "Seat Height",
+    "Arm Width", "Arm Height",
+    "Back Width", "Back Depth", "Back Height",
     "Price", "Finish", "Materials", "Tags", "Notes",
 ]
 
@@ -257,8 +259,11 @@ def scrape_listing(cat):
 def parse_product_page(url):
     """
     Returns dict with dimension/detail fields.
-    Dims extracted from embedded JSON in .pdp-product-dimensions__dimension--desktop.
-    Details from .pdp-product-details__copy.
+    Dims: all .pdp-product-dimensions__dimension blocks, skip --mobile to avoid duplicates.
+      - --desktop blocks  -> Overall (standard cols)
+      - plain blocks      -> More Dimensions: Seat/Arm/Back (standard cols) or dynamic
+      - --last block      -> Weight
+    Product Details: "Key: Value" bullets -> dynamic cols; rest -> Materials.
     """
     result = {}
     try:
@@ -274,10 +279,23 @@ def parse_product_page(url):
         soup = BeautifulSoup(r.text, "html.parser")
 
         # ── Dimensions ───────────────────────────────────────────────────────
-        dim_blocks = soup.select("div.pdp-product-dimensions__dimension--desktop")
-        for block in dim_blocks:
+        # Select all dimension blocks; skip --mobile ones to avoid duplicates
+        all_dim_divs = soup.select("div.pdp-product-dimensions__dimension")
+        seen_sections = set()
+
+        for block in all_dim_divs:
+            classes = block.get("class", [])
+            # Skip mobile variants (they duplicate desktop/plain content)
+            if "pdp-product-dimensions__dimension--mobile" in classes:
+                continue
+
             title_el = block.select_one("div.pdp-product-dimensions__dimension-title")
             section  = title_el.get_text(strip=True) if title_el else "Overall"
+
+            # Deduplicate sections (weight appears as both --desktop--last and plain)
+            if section in seen_sections:
+                continue
+            seen_sections.add(section)
 
             script_el = block.select_one("script[type='application/json']")
             if not script_el:
@@ -287,10 +305,9 @@ def parse_product_page(url):
             except Exception:
                 continue
 
-            seen_abbrev = {}  # track repeated abbreviations within a section
+            seen_abbrev_in_section = set()
             for entry in data.get("values", []):
                 val  = entry.get("value")
-                unit = entry.get("unit", "in")
                 abbr = entry.get("abbreviation", "").lower()
                 typ  = entry.get("type", "dimension")
 
@@ -298,33 +315,42 @@ def parse_product_page(url):
                     continue
 
                 if typ == "weight":
-                    result["Weight"] = str(val)
+                    if "Weight" not in result:
+                        result["Weight"] = str(val)
                     continue
 
                 col = _dim_col(section, abbr)
                 if col:
-                    # Handle duplicate abbreviations in same section (two 'd' = Depth + Diameter)
-                    if col in result:
-                        # second 'd' in Overall -> Diameter
-                        if abbr == "d" and "Diameter" not in result:
-                            result["Diameter"] = str(val)
-                    else:
+                    if col not in result:
                         result[col] = str(val)
+                    elif abbr == "d" and section.lower() == "overall" and "Diameter" not in result:
+                        # second 'd' in Overall → Diameter
+                        result["Diameter"] = str(val)
                 else:
-                    # Unknown section or abbreviation -> dynamic column
+                    # Unknown section (Cord Length, Canopy, Leg, etc.) → dynamic
                     dyn_key = f"{section} {abbr.upper()}" if abbr else section
-                    # avoid collision with already-set key
-                    if dyn_key not in result:
+                    if dyn_key not in result.get("extra_dims", {}):
                         result.setdefault("extra_dims", {})[dyn_key] = str(val)
 
-        # ── Product Details (Materials / Construction bullets) ────────────────
+        # ── Product Details: parse key:value bullets as dynamic; rest as Materials ──
         details_el = soup.select_one("div.pdp-product-details__copy")
         if details_el:
             items = details_el.select("li")
-            if items:
-                result["Materials"] = " | ".join(li.get_text(strip=True) for li in items)
-            else:
-                result["Materials"] = details_el.get_text(" ", strip=True)
+            material_lines = []
+            for li in items:
+                text = li.get_text(strip=True)
+                if not text:
+                    continue
+                # "Key: value" pattern → dynamic column
+                kv = re.match(r'^([^:]{2,40}):\s*(.+)$', text)
+                if kv:
+                    key = kv.group(1).strip().title()
+                    val = kv.group(2).strip()
+                    result.setdefault("extra_dims", {})[key] = val
+                else:
+                    material_lines.append(text)
+            if material_lines:
+                result["Materials"] = " | ".join(material_lines)
 
     except Exception as e:
         print(f"    ! Page parse error {url}: {e}")
@@ -413,13 +439,17 @@ def write_excel(all_data):
             ws.cell(ri, 15, p.get("Seat Width", ""))
             ws.cell(ri, 16, p.get("Seat Depth", ""))
             ws.cell(ri, 17, p.get("Seat Height", ""))
-            ws.cell(ri, 18, p.get("Arm Height", ""))
-            ws.cell(ri, 19, p.get("Price", ""))
-            ws.cell(ri, 20, p.get("Finish", ""))
-            ws.cell(ri, 21, p.get("Materials", ""))
-            ws.cell(ri, 22, p.get("Tags", ""))
-            ws.cell(ri, 23, p.get("Notes", ""))
-            for ei, ec in enumerate(extra_cols, 24):
+            ws.cell(ri, 18, p.get("Arm Width", ""))
+            ws.cell(ri, 19, p.get("Arm Height", ""))
+            ws.cell(ri, 20, p.get("Back Width", ""))
+            ws.cell(ri, 21, p.get("Back Depth", ""))
+            ws.cell(ri, 22, p.get("Back Height", ""))
+            ws.cell(ri, 23, p.get("Price", ""))
+            ws.cell(ri, 24, p.get("Finish", ""))
+            ws.cell(ri, 25, p.get("Materials", ""))
+            ws.cell(ri, 26, p.get("Tags", ""))
+            ws.cell(ri, 27, p.get("Notes", ""))
+            for ei, ec in enumerate(extra_cols, 28):
                 ws.cell(ri, ei, ed.get(ec, ""))
 
         # Auto column width
