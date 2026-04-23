@@ -1,0 +1,6 @@
+ACTIVITY LOG
+=============
+FORMAT: [Date] | [Vendor] | [Task] | [Status] | [Time Taken]
+
+DATE       | VENDOR          | TASK              | STATUS      | TIME
+-----------|-----------------|-------------------|-------------|----------

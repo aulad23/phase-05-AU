@@ -1,0 +1,18 @@
+CHAT FILE — Instructions to Agent
+===================================
+এখানে vendor name + কী করতে হবে লিখুন।
+Agent এই file দেখে কাজ শুরু করবে।
+
+FORMAT:
+-------
+Vendor: [Vendor Name]
+Task: [কী করতে হবে]
+URL: [website URL — optional, না থাকলে Vendor List থেকে নেবে]
+
+EXAMPLE:
+--------
+Vendor: Baker Furniture
+Task: Step1 + Step2 script বানাও
+
+Vendor: Phillips Collection
+

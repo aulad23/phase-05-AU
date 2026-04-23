@@ -1,0 +1,22 @@
+VERSION 01
+===========
+Date        : 2026-04-19
+Status      : Active / Stable
+
+WHAT'S IN THIS VERSION:
+------------------------
+- Core scraping agent setup
+- Chat, Code, Core, Data, Demo, Logs, Memory, Output, Skills, Vendor_List folders
+- WORKFLOW.txt — main workflow instructions
+- Client_Update system — client feedback intake
+- claude_init — Claude Code initialization
+
+CHANGE LOG:
+-----------
+v01 (2026-04-19) : Initial version — base agent structure finalized.
+
+HOW TO USE THIS FOLDER:
+------------------------
+- Future versions জমা হবে Versions/Version_02, Version_03 ... এভাবে
+- প্রতিটা version-এ এই VERSION_INFO.txt থাকবে changes সহ
+- Major update হলে নতুন version folder বানাও

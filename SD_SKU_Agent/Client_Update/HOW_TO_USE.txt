@@ -1,0 +1,6 @@
+CLIENT UPDATE FILE
+===================
+Client feedback আসলে এই folder-এ রাখুন।
+Agent পড়ে code বা data update করবে।
+
+FORMAT: [VendorName]_update.txt বা .xlsx

@@ -1,0 +1,989 @@
+AGENT VENDOR MEMORY — PHASE-05 (AU)
+=====================================
+Last Updated: 2026-04-19
+Total Vendors Done: 60+
+
+FORMAT PER ENTRY:
+VENDOR      : name
+URL         : base URL
+LIBRARY     : Selenium / Requests+BS4 / undetected_chromedriver
+DIFFICULTY  : EASY / MEDIUM / HIGH  (HIGH = bot detection / VPN needed)
+VPN_REQUIRED: Yes / No / Possibly
+STEP1       : CSS selectors for listing page
+STEP2       : CSS selectors for product detail page
+COLUMNS     : extracted fields
+PAGINATION  : type
+SPECIAL     : notes
+CODE        : path/to/scripts
+
+========================================
+COMPLETED VENDORS
+========================================
+
+VENDOR: Alfonso Marina
+URL: https://alfonsomarina.com
+LIBRARY: Selenium
+STEP1: div.registroProducto, a.registroImagen, a.registroTitulo
+STEP2: div.elementor-widget-container, h2.elementor-heading-title
+COLUMNS: SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Height, Finish
+PAGINATION: Infinite scroll (3-round no-growth stop)
+SPECIAL: Fraction to decimal (26 3/4 → 26.75); PRODUCT CODE label detection
+CODE: Alfonso Marina (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Allan Knight
+URL: https://allan-knight.com
+LIBRARY: Requests+BS4 (Step2), Selenium (Step1)
+STEP1: img.card-img-top, div.card, a[href]
+STEP2: div.product-desc-holder, strong.category, h1
+COLUMNS: SKU, Description, Weight, Width, Depth, Diameter, Height, COM, Shade Details, Seat Height, Arm Height, Wattage
+PAGINATION: Lazy scroll
+SPECIAL: OAH fallback; Shade details extraction; Complex description with stop markers
+CODE: Allan Knight/Code/
+
+---
+VENDOR: Alliad Maker
+URL: https://www.alliedmaker.com
+LIBRARY: Selenium
+STEP1: div.facets-item-cell-list, .facets-item-cell-list-name
+STEP2: .sku-spec h4, //li[h4/a[text()='DIMENSIONS']]
+COLUMNS: Index, Category, Product URL, Image URL, Product Name, SKU, Product Family Id, Description, List Price, Weight, Width, Depth, Diameter, Length, Height, Lamping
+PAGINATION: Query param (?page=1,2...)
+SPECIAL: Deduplication by URL; Category-wise workbook
+CODE: Alliad Maker/Code/
+
+---
+VENDOR: Art & Forge
+URL: https://artandforge.com
+LIBRARY: Requests+BS4
+STEP1: product-grid-item, a[href], p.product__grid__title
+STEP2: window.wpdExtensionIsProductPage (JSON), meta[property='og:image']
+COLUMNS: Category, Product URL, Image URL, Name, SKU, Product Family, Description, Weight, Width, Depth, Diameter, Length, Height, Base, List Price, Color
+PAGINATION: Query param (?page=1,2...)
+SPECIAL: Shopify JSON variant extraction; Multiple color variants per product
+CODE: Art & Forge/Code/
+
+---
+VENDOR: Artesia
+URL: https://www.artesiacollections.com
+LIBRARY: Selenium
+STEP1: div.wixui-repeater__item, [data-testid="richTextElement"]
+STEP2: div[data-hook="tab-item"], span[data-hook="tab-item-label"]
+COLUMNS: Index, Category, Product URL, Image URL, Name, SKU, Description, Weight, Width, Depth, Diameter, Length, Height, Arm Height, Seat Height, Size, Product care
+PAGINATION: Infinite scroll
+SPECIAL: Wix-based site; Tab extraction (DESCRIPTION, SIZE, PRODUCT CARE)
+CODE: Artesia/Code/
+
+---
+VENDOR: Bennett
+URL: https://www.bennetttothetrade.com
+LIBRARY: Requests+BS4
+STEP1: div.card-wrapper.product-card-wrapper, h3.card__heading.h5 a
+STEP2: div.product__description.rte, span.price-item--regular
+COLUMNS: Product URL, Image URL, Name, SKU, Description, Weight, Product Family Id, List Price, Width, Depth, Diameter, Height, Seat Height, COM
+PAGINATION: Query param (?page=1,2...)
+SPECIAL: COM extraction; Seat Height patterns; Auto-save every 5 products
+CODE: Bennett (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Bernhardt
+URL: https://www.bernhardt.com
+LIBRARY: Selenium
+STEP1: div.grid-item, img.grid-image, span.product-id
+STEP2: panel[@panel-title='Dimensions'], ul.no-bullets
+COLUMNS: Category, Product URL, Image URL, Name, SKU, Product Family ID, Description, Weight, Width, Depth, Diameter, Height, Finish, Seat Width, Seat Depth, Seat Height, Arm Height, COM
+PAGINATION: URL page replacement
+SPECIAL: COM Yardage from Fabrics panel; JSON-LD schema image fallback
+CODE: Bernhardt (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Bright Chair
+URL: https://www.brightchair.com
+LIBRARY: Selenium
+STEP1: ul#rig.rig > a, li img
+STEP2: .text-nav li[info-view="product-finishes-shell"], #detailed-specs-shell
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Height, COM, COL, Arm Height, Seat Height, Finish
+PAGINATION: Hash-based (#slug)
+SPECIAL: Finishes tab first, then Specs tab; Retry on failure
+CODE: Bright Chair/Code/
+
+---
+VENDOR: Cameron
+URL: https://cameroncollection.com
+LIBRARY: Requests+BS4
+STEP1: li.grid-block, a.product-image, h2.product-name
+STEP2: div.product-description
+COLUMNS: Product URL, Image URL, Name, SKU, Description, Weight, Width, Depth, Diameter, Height
+PAGINATION: Single page
+SPECIAL: SKU generation (vendor+category+index)
+CODE: Cameron/Code/
+
+---
+VENDOR: Caracole
+URL: https://caracole.com
+LIBRARY: Requests+BS4
+STEP1: div.grid-item.product-item, a.product-link
+STEP2: div.product__block.product__sku, details.accordion
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Length, Height, Features, Finish
+PAGINATION: Query param (?page=1,2...)
+SPECIAL: Accordion dimension extraction; Finish radio buttons; Resume support
+CODE: Caracole/Code/
+
+---
+VENDOR: Century
+URL: https://shop.centuryfurniture.com
+LIBRARY: Requests+BS4 (Step1), Selenium (Step2)
+STEP1: div.card-wrapper, a[id*="CardLink"]
+STEP2: div.hideAll span.sku, //summary[.//h2[contains(text(),'Dimensions')]]
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family Id, Description, List Price, Weight, Width, Depth, Diameter, Length, Height, Finish, Seat Height, Arm Height
+PAGINATION: Query param
+SPECIAL: MSRP removal; Accordion dimensions; Family ID split on " - "
+CODE: Century (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Chaddock
+URL: https://chaddock.com
+LIBRARY: Selenium
+STEP1: div.grid_3.SearchResults_Container, span.CHAD_SearchResult_Title
+STEP2: tr#ctl00_ctl00_ChildBodyContent_PageContent_trDimensionsOverall
+COLUMNS: Category, Product URL, Image URL, Name, SKU, Product Family Id, Description, Weight, Width, Depth, Height, Diameter, Seat Height, Seat Depth, Seat Width, Arm Height, COM, COL
+PAGINATION: View All + PageSize param + lazy scroll
+SPECIAL: XPath table cell extraction; Multi-category workbook
+CODE: Chaddock (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Chelsea Textiles
+URL: https://www.chelseatextile.com
+LIBRARY: Requests+BS4 (Step1), Selenium (Step2)
+STEP1: li.o-gridlist__item[data-type], a.c-gridcard, h4.c-gridcard__title
+STEP2: dl dt dd (Details section), select.size-selector
+COLUMNS: Product URL, Image URL, Name, SKU, Description, Weight, Size, Fabric Content, Pattern Repeat
+PAGINATION: .c-pagination__page links
+SPECIAL: DL/DT/DD triplet extraction; Fabric/wall covering type detection
+CODE: Chelsea Textiles/Code/
+
+---
+VENDOR: Collier Webb
+URL: https://collierwebb.com
+LIBRARY: Selenium
+CODE: Collier Webb/Code/
+
+---
+VENDOR: CR Laine
+URL: https://www.crlaine.com
+LIBRARY: Selenium/Requests+BS4
+CODE: CR Laine/Code/
+
+---
+VENDOR: Curry & Company
+URL: https://curreyandcompany.com
+LIBRARY: Selenium
+STEP1: div.relative.group, div.paragraph-3b-sm
+STEP2: Category pagination
+COLUMNS: Category, Product URL, Image URL, Name, SKU
+CODE: Curry & Company/Code/
+
+---
+VENDOR: Dana Creath
+URL: https://danacreath.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Dana Creath/Code/
+
+---
+VENDOR: De Sousa Hughes
+URL: https://www.desousahughes.com
+LIBRARY: Selenium/Requests+BS4
+CODE: De Sousa Hughes/Code/
+
+---
+VENDOR: Eichholtz
+URL: https://eichholtz.com
+LIBRARY: Selenium
+CODE: Eichholtz/Code/ (3 steps)
+
+---
+VENDOR: Gabby
+URL: https://mygabby.com
+LIBRARY: Selenium
+CODE: Gabby/Code/
+
+---
+VENDOR: Hector Finch
+URL: https://hectorfinch.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Hector Finch/Code/
+
+---
+VENDOR: Hennepin Made
+URL: https://hennepinmade.com
+LIBRARY: Selenium
+CODE: Hennepin Made/Code/
+
+---
+VENDOR: Hickory Chair
+URL: https://www.hickorychair.com
+LIBRARY: Selenium
+CODE: Hickory (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Highland House
+URL: https://highlandhouse.com
+LIBRARY: Selenium
+CODE: Highland House/Highland House (Scraping & Spot Checking)/Code/ (3 steps)
+
+---
+VENDOR: Holly Hunt
+URL: https://hollyhunt.com
+LIBRARY: Selenium
+CODE: Holly Hunt/Code/
+
+---
+VENDOR: Honning
+URL: https://honningfurniture.com
+LIBRARY: Requests+BS4
+CODE: Honning/Code/
+
+---
+VENDOR: Interlude Home
+URL: https://interludehome.com
+LIBRARY: Selenium
+CODE: Interlude Home/Code/ (4 steps)
+
+---
+VENDOR: Invisible Collection
+URL: https://theinvisiblecollection.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Invisible Collection/
+
+---
+VENDOR: Jaipur
+URL: https://www.jaipurliving.com
+LIBRARY: Selenium
+CODE: Jaipur (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Janus et Cie
+URL: https://www.janusetcie.com
+LIBRARY: Selenium
+CODE: Janus et Cie/Code/ (4 steps)
+
+---
+VENDOR: Johnathan Brown Inc
+URL: https://johnathanbrownhome.com
+LIBRARY: Requests+BS4
+CODE: Johnathan Brown Inc/Code/
+
+---
+VENDOR: Liaigre
+URL: https://liaigre.com
+LIBRARY: Selenium
+CODE: Liaigre/Code/
+
+---
+VENDOR: Loloi
+URL: https://loloirugs.com
+LIBRARY: Selenium
+STEP1: div.product-card.relative, button#load-more
+STEP2: div#details-drawer, dl (definition lists)
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family ID, Description, Construction, Material, Pile Height, Backing, Country of Origin
+PAGINATION: Load more button
+SPECIAL: srcset best-URL selection; DL/DT/DD parsing
+CODE: Loloi (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: McLean Lighting
+URL: (lighting vendor)
+LIBRARY: Selenium
+CODE: McLean Lighting Work/Code/ (4 steps)
+
+---
+VENDOR: Mr. Brown London
+URL: https://mrbrown.co.uk
+LIBRARY: Requests+BS4, Playwright
+STEP2: div.woocommerce-product-details__short-description, table.woocommerce-product-attributes
+COLUMNS: Field No., Category, Product URL, Image URL, Name, SKU, Product Family Id, Description, Width, Depth, Diameter, Height, Finish, Seat, COM
+CODE: Mr. Brown London (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: New Classics
+URL: https://newclassicsfurniture.com
+LIBRARY: Selenium/Requests+BS4
+CODE: New Classics/Code/
+
+---
+VENDOR: Niermann Weeks
+URL: https://niermannweeks.com
+LIBRARY: Requests+BS4
+STEP1: li.nw-product, a, img, h3
+STEP2: div.col.grid_6_of_12
+COLUMNS: SKU, Product Family Id, Description, List Price, Weight, Width, Depth, Diameter, Height, COM
+PAGINATION: page/page_number/
+CODE: Niermann Weeks (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Palecek
+URL: https://www.palecek.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Palecek (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Palmer Hargrave
+URL: https://palmerhargrave.com
+LIBRARY: Requests+BS4
+STEP1: article.e-add-post, h3.e-add-post-title a
+CODE: Palmer Hargrave/Code/ (4 steps)
+
+---
+VENDOR: Pierre Frey
+URL: https://www.pierrefrey.com
+LIBRARY: Requests+BS4
+STEP1: div.resultListItem, ul.pagination__list
+STEP2: div.specTechInfos (block extraction | separated)
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Length, Height, Total Height, Finish, COM, Seat, Back, Cushion, Construction, Repeat, Comfort, Thickness
+CODE: Pierre Frey/Code/ (4 steps)
+
+---
+VENDOR: Powell & Bonnell
+URL: https://powellandbonnell.com
+LIBRARY: Selenium
+STEP1: li.product, a.woocommerce-LoopProduct-link, h2.woocommerce-loop-product__title
+PAGINATION: Infinite scroll
+CODE: Powell & Bonnell/Code/
+
+---
+VENDOR: Quatrine
+URL: https://quatrine.com
+LIBRARY: Requests+BS4/Selenium
+CODE: Quatrine/Code/
+
+---
+VENDOR: Rejuvenation
+URL: https://www.rejuvenation.com
+LIBRARY: Requests+BS4/Selenium
+CODE: Rejuvenation/Code/
+
+---
+VENDOR: Remains
+URL: https://remains.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Remains (Scraping & Spot Checking)/Code/ (4 steps: listpage, detailspage, step3, step4)
+
+---
+VENDOR: Rowe
+URL: https://rowefurniture.com
+LIBRARY: Selenium
+CODE: Rowe/Code/ (3 steps)
+
+---
+VENDOR: Siemon & Salazar
+URL: https://siemonandsalazar.com
+LIBRARY: Requests+BS4
+CODE: Siemon & Salazar/Code/
+
+---
+VENDOR: Stahl & Band
+URL: https://stahlandband.com
+LIBRARY: Requests+BS4
+CODE: Stahl & Band/Code/
+
+---
+VENDOR: Studio Twenty Seven
+URL: https://studiotwentyseven.com
+LIBRARY: Selenium
+CODE: Studio Twenty Seven/Code/ (3 steps)
+
+---
+VENDOR: Sudio Bel Vetro
+URL: https://studiobelverto.com
+LIBRARY: Requests+BS4
+CODE: Sudio Bel Vetro/Code/
+
+---
+VENDOR: Sunpan
+URL: https://sunpan.com
+LIBRARY: Selenium
+STEP1: nav.pagination, div.card-wrapper.product-card-wrapper
+STEP2: fieldset.js.product-form__input, table.tab-dimensions__table
+COLUMNS: Index, Category, Product URL, Image URL, Name, SKU, Product Family Id, Color, Weight, Width, Depth, Diameter, Length, Height, Arm Height, Seat Height, Seat Width, Seat Depth, Finish, Base, Seat, Cushion, Wattage
+SPECIAL: window.variantMetafields JSON; Multiple color variants → separate rows
+CODE: Sunpan/Code/
+
+---
+VENDOR: Surya
+URL: https://www.surya.com/Catalog
+LIBRARY: Selenium (Step1: Chrome Debug Mode | Step2: undetected_chromedriver)
+DIFFICULTY: HIGH — Bot detection, Cloudflare-style blocking
+VPN_REQUIRED: Possibly (site blocks headless — use Chrome Debug Port instead)
+STEP1: div[data-test-selector='productGridItem'], a[data-test-selector='productImage']
+       SKU: span[data-test-selector='productStyleId'] | img alt | URL slug
+       Pagination: Infinite scroll (SCROLL_STEP_PX=2000, STABLE_ROUNDS=45, max 2hr)
+STEP2: undetected_chromedriver (uc) + browser fingerprint spoof
+       PROXY = None (set if VPN needed)
+       USER_DATA_DIR: C:\ChromeProfile\Surya
+COLUMNS: Product URL, Image URL, SKU → then full dims in step2
+SPECIAL: Chrome Debug Port 9222 (Step1) — connects to existing Chrome session
+         undetected_chromedriver (Step2) — bypasses bot detection
+         Browser spoof: UA, platform, WebGL vendor, languages
+         Block detection: checks for "verify you are human" / "access denied"
+         3-step workflow: step1→step2→step3 (step3 merges/cleans data)
+         BLOCK_TEXTS = ["verify you are human","are you human","access denied"]
+CODE: Surya (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Sutherland
+URL: https://www.sutherlandfurniture.com
+LIBRARY: Selenium
+CODE: Sutherland/Code/
+
+---
+VENDOR: The Future Perfect
+URL: https://www.thefutureperfect.com
+LIBRARY: Requests+BS4
+CODE: The Future Perfect/Code/
+
+---
+VENDOR: Thedone Alexander
+URL: (custom vendor)
+LIBRARY: Selenium
+CODE: Thedone_alexander/Code/
+
+---
+VENDOR: Troscan
+URL: https://troscan.com
+LIBRARY: Requests+BS4
+CODE: Troscan/Code/
+
+---
+VENDOR: Utter Most
+URL: https://uttermost.com
+LIBRARY: Playwright
+STEP1: span.productFullDetail-shortDescription--SS
+STEP2: div.option-root-JXw, button.tile-root-8ZR
+COLUMNS: Product URL, Image URL, Name, SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Length, Height, Seat Width, Seat Depth, Seat Height, Arm Height
+SPECIAL: Playwright safe_click with retries; Color/Size variant clicking
+CODE: Utter Most/Code/
+
+---
+VENDOR: Verellen
+URL: https://verellen.biz
+LIBRARY: Selenium
+STEP1: .product-widget, .pagination .button-wrapper button
+PAGINATION: Dynamic button (01, 02, 03 zero-padded)
+CODE: Verellen/Code/
+
+---
+VENDOR: Vill & House
+URL: https://villaandhouseinteriors.com
+LIBRARY: Selenium
+CODE: Vill & House (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: Visual Comfort
+URL: https://www.visualcomfort.com
+LIBRARY: Selenium/Requests+BS4
+CODE: Visual Comfort (Scraping & Spot Checking)/Code/ (listpage, detailspage, step3)
+
+---
+VENDOR: Wells Abbott
+URL: https://wellsabbott.com
+LIBRARY: Playwright+BS4
+STEP2: span.variant-sku, div.product__description, product-info (Shopify)
+COLUMNS: Product URL, Image URL, Name, Product Family Id, SKU, Description, Dimensions, Weight, Width, Depth, Diameter, Length, Height, Seat Height, Seat Depth, Seat Width, Arm Height, Note, COM, COL, COT
+SPECIAL: Unicode fraction handling (½ ¼ ¾); COM/COL/COT from Note field
+CODE: Wells Abbott/Code/
+
+---
+VENDOR: Worlds Away
+URL: https://worldsaway.com
+LIBRARY: Selenium
+CODE: Worlds Away (Scraping & Spot Checking)/Code/
+
+---
+VENDOR: ZUO ← LAST UPDATED
+URL: https://www.zuomod.com
+LIBRARY: Selenium
+STEP1: li.product-item, a.product-item-link, img.product-image-photo
+STEP2: Magento JSON, div[data-role="content"], li[data-role="collapsible"], .product-attribute-table-container
+COLUMNS: Manufacturer, Source, Image URL, Product Name, SKU, Product Family Id, Description, Weight, Width, Depth, Diameter, Length, Height, Seat Width, Seat Depth, Seat Height, Arm Height, Arm Width
+PAGINATION: Per-page limiter (160 items) + lazy scroll
+SPECIAL: WebDriver stealth mode (CDP injection); Magento data parsing; Dynamic seat/arm mapping (SW, SD, SH, AH, AW); Tab-based detail panels
+CODE: Zuo/Code/
+
+========================================
+COMMON PATTERNS (USE FOR NEW VENDORS)
+========================================
+
+STANDARD COLUMNS ORDER (UPDATED — CLIENT UPDATE):
+Manufacturer, Source, Image URL, Product Name, SKU, Product Family Id,
+Description, Weight, Width, Depth, Diameter, Length, Height,
+Seat Width, Seat Depth, Seat Height, Arm Height, Arm Width, List Price
+
+COLUMN CHANGES:
+  "Product URL" → "Source"  (renamed by client)
+  "Manufacturer" → NEW column added (hardcode brand name)
+  ZUO = last vendor with new format (reference code)
+  Surya + older vendors = still using old format → need update when asked
+
+EXCEL OUTPUT STRUCTURE:
+- Row 1-3: Brand info (B1/B2)
+- Row 4: Headers
+- Row 5+: Data
+- Hyperlinks: Product Name → Product URL
+
+FRACTION CONVERSION (always include):
+def convert_to_decimal(val):
+    try:
+        parts = str(val).strip().split()
+        if len(parts)==2: return float(parts[0]) + float(Fraction(parts[1]))
+        return float(Fraction(parts[0]))
+    except: return val
+
+IMAGE FALLBACKS (always use all):
+data-src → data-lazy-src → srcset → data-original → src → og:image
+
+BATCH SAVE: Every 10-20 products to avoid data loss
+RESUME SUPPORT: Check if output file exists, skip already-done rows
+HEADLESS CHROME: Always use --headless=new, --no-sandbox, --disable-dev-shm-usage
+
+========================================
+DEMO_DATA VENDOR QUICK REFERENCE
+(D:\Demo_Data — Client Refresh/Updated)
+========================================
+Last Updated: 2026-04-22
+
+VENDOR: Arteriors  ← NEW FORMAT REFERENCE
+URL: https://www.arteriorshome.com
+FORMAT: Source + Manufacturer = "Arteriors" (NEW standard)
+STEP1: div[id^='slide-'], Load More button click loop, SKU from URL slug regex
+STEP2: Alpine.js accordions (click_accordion), parse_label_value_rows(), dynamic extra columns
+CODE: Demo_Data\Arteriors\Sample\
+
+VENDOR: Alfonso Marina
+DEMO_CODE: Demo_Data\Alfonso Marina\Merge\  (step1.py, step2.py)
+vs PHASE05: d:\phase-05 (AU)\Alfonso Marina\Code\
+CHANGE: same logic, no format update yet
+
+VENDOR: Alliad Maker
+DEMO_CODE: Demo_Data\Alliad Maker\Merge\  (step1.py, step2.py)
+CHANGE: cleaner rewrite, same selectors
+
+VENDOR: Bernhardt
+DEMO_CODE: Demo_Data\Bernhardt\Code\Berhardt_step1.py / step2.py
+STEP1: div.grid-item, Angular hash routing (#?), page={page} in URL
+NOTE: has Manufacturer col but still Product URL not Source (MIXED)
+
+VENDOR: Century
+DEMO_CODE: Demo_Data\Century\Merge\step1.py, Step2.py
+STEP1: Requests+BS4 (Shopify), div.card-wrapper, a[id*='CardLink']
+STEP2: Selenium, //summary[.//h2[contains(text(),'Dimensions')]], div.hideAll span.sku
+
+VENDOR: Chaddock
+DEMO_CODE: Demo_Data\Chaddock\Merge\Step1.py, Step2.py
+STEP1: View All button (set dropdown 2000000000) + lazy scroll, div.grid_3.SearchResults_Container
+STEP2: Hardcoded ASP.NET CSS IDs (tr#ctl00_...trDimensionsOverall)
+
+VENDOR: Curry & Company
+DEMO_CODE: Demo_Data\Curry & Company\Code\step1.py, Step2.py
+STEP1: Selenium, div.relative.group, page=N
+STEP2: MUI accordion (MuiAccordionSummary-root), Shade/Canopy/Seat/Arm extraction
+
+VENDOR: Fairfield
+DEMO_CODE: Demo_Data\Fairfield\Code\Firefled_step1.py, Firefiled_step2.py
+STEP1: Code uses Source column, but Excel says Product Url (mismatch!)
+STEP2: separate script
+
+VENDOR: Palecek
+DEMO_CODE: Demo_Data\Palecek\Code\Step1.py, Step2.py
+STEP1: viewall=true URL + 1 scroll, div.ProductThumbnail, img.ProductThumbnailImg[data-src]
+NOTE: Uses "Field No." instead of "Index" column
+
+VENDOR: Rejuvenation
+DEMO_CODE: Demo_Data\Rejuvenation\Code\Step1.py, Step2.py
+STEP1: MANUAL MODE (user scrolls, input() prompt)
+STEP2: Radio click variation system (multiple rows per product), sku_fallback() if no SKU
+
+VENDOR: Theodore Alexander
+DEMO_CODE: Demo_Data\Thedone_alexander\Code\
+NOTE: Uses "Categori" (typo), "Product Family Name" (not "Product Family Id")
+STEP1: div.info, a.productImage, div.name a[title], div.sku, manual page count
+
+VENDOR: The Future Perfect
+DEMO_CODE: Demo_Data\The Future Perfect\Code\
+STEP1: WooCommerce, Selenium + infinite scroll, li.product, price regex [€£$]\s*[\d,]+
+
+VENDOR: Visual Comfort
+DEMO_CODE: Demo_Data\Visual Comfort\Code\listpage.py, detailspage.py, step3.py
+STEP1: Magento, li.product-card, ?p=N param, manual START/END page range
+NOTE: 3-script approach (list + detail + merge), special lighting cols
+
+
+========================================
+DEMO_DATA VENDOR QUICK REFERENCE - PART 2
+(Added: 2026-04-22)
+
+VENDOR: Gabby
+DEMO_CODE: Demo_Data/Gabby/Code/Gabby_step1.py, Gabby_step2.py
+URL: gabby.com
+STEP1: Requests+BS4, li.group/product-card, h3>a name, data-src img, ?page=N pagination
+STEP2: Requests+BS4 (no Selenium), SKU: p[id^=Sku-template], dims from specs-attributes-section DIMENSIONS h3, price: 5-pattern fallback
+OUTPUT_COLS: Source, Image URL, Product Name (step1); adds SKU, Product Family Id, dims, Price, Warranty, Care Instructions...
+NOTE: Product Family Id = re.sub(" - .*", "", name); per-category output files
+
+VENDOR: Kravet
+DEMO_CODE: Demo_Data/Kravet/Code/step1.py, step2.py, step3.py, step4.py
+URL: kravet.com (Magento)
+STEP1: Selenium infinite scroll, ais-Hits-list / ais-InfiniteHits-list / li.product-item, cookie: CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll
+STEP2: Selenium, #details table#product-attribute-specs-table tr -> dynamic columns (each row -> own col), Resources tab -> Product Info
+STEP3: Pure pandas, extract_key() from Details string, keep_inches_only(), keep_pounds_only(), normalize_base() (Candelabra/Medium)
+STEP4: Combined step2+step3; dcol() helper checks multiple column aliases
+OUTPUT_COLS: Product URL, Image URL, Product Name, Product Family Id, SKU, Description, Width/Depth/Diameter/Height/Length/Weight, Finish, Color, Socket/Wattage/Lightsource/ColorTemp, COM/COL/COT, Seat/Arm dims, Product Info
+NOTE: Product Family Id split at first ,\-_& in name; step1 output has "Page URL" extra col
+
+VENDOR: Bernhardt
+DEMO_CODE: Demo_Data/Bernhardt/Code/Berhardt_step2.py
+URL: bernhardtfurniture.com (Angular SPA)
+STEP1: Selenium + ?page={page}, div.grid-item, div.product-header name, span.product-id SKU (already analyzed)
+STEP2: Selenium headless=False, //panel[@panel-title='Dimensions']//button click, ul.no-bullets first li=label rest=value, Fabrics panel for COM
+OUTPUT_COLS: Product URL, Image URL, Product Name, SKU, Product Family ID, Description, Weight, Width/Depth/Diameter/Height, Finish, Seat W/D/H, Arm W/D/H, COM
+NOTE: Image tries 10 CSS selectors + og:image + JSON-LD; Product Family ID = full product name
+
+VENDOR: The Future Perfect
+DEMO_CODE: Demo_Data/The Future Perfect/Code/The_Future-Perfect2.py
+URL: thefutureperfect.com (WooCommerce)
+STEP1: Selenium infinite scroll, li.product (already analyzed)
+STEP2: Selenium, SKU from nitro-telemetry-meta->JSON-LD->any SKU text, specs from section.border.technical div.spec h6+p
+OUTPUT_COLS: Product URL, Image URL, Product Name, Product Family Id, List Price, SKU, Description, Weight, Specifications, Materials, Dimensions, Length/Width/Depth/Diameter/Height, Seat H/D/L, Arm H/W/D, COM/COL/Base/Canopy/Shade Details
+NOTE: Uses openpyxl directly (not pandas DataFrame); Product Family Id = full Product Name; Refresh_Demo.py is updated step1
+
+VENDOR: Visual Comfort
+DEMO_CODE: Demo_Data/Visual Comfort/Code/listpage.py, detailspage.py, step3.py
+URL: visualcomfort.com (Magento)
+STEP1: Selenium, li.product-card, ?p=N, manual START/END page range (already analyzed)
+STEP2 OLD (detailspage.py): Variation carousel a.configurable-thumbnail data-product-sku, owl-next carousel, fotorama image, select.super-attribute-select for Finish/ColorTemp
+STEP2 NEW (step3.py): Source column, Manufacture="Visual Comfort" (TYPO - not Manufacturer!), img.dropin-image + Scene7 CDN images, .additional-product-information-item + .specifications-list specs, atomic checkpoint saves
+OUTPUT_COLS: Manufacture (typo), Source, Image URL, Product Name, SKU, Product Family Id, Price, Description, Width/Depth/Diameter/Length/Height/Weight, Designer/Collection/Series, Finish, Shade Details, Socket/Wattage/Lightsource, Spec Sheet/Install Guide/CAD Block...
+NOTE: "Manufacture" column -- intentional typo in codebase! 3-script approach
+
+VENDOR: Theodore Alexander
+DEMO_CODE: Demo_Data/Thedone_alexander/Code/Theodone_alexander_step_2.py
+URL: theodorealexander.com
+STEP1: Selenium, div.info card, a.productImage URL, div.name a[title] name, div.sku SKU (already analyzed)
+STEP2: Requests+BS4 (no Selenium!), table.tableDimension -> header th col names -> "in" row values
+OUTPUT_COLS: Product URL, Image URL, Product Name, SKU, Product Family Name (not Id!), Description, List Price, Weight, Net Weight, Width (in)/Depth (in)/Diameter (in)/Height (in), Finish, Collection, Room/Type, Main Materials, Shapes Materials, Seat/Arm/Inside Seat dims
+NOTE: Dimension col names have "(in)" suffix! Product Family Name (not Id). tqdm progress bar.
+
+
+========================================
+PHASE-05 (AU) DETAILED ANALYSIS — PART 2
+(Added: 2026-04-22)
+========================================
+
+VENDOR: Loloi
+URL: https://www.loloirugs.com/collections/rugs-all
+LIBRARY: Selenium
+STEP1: div.product-card.relative.card-block__item, a.js-product-name (title attr=name, span=SKU)
+       Image: img.product-card__image currentSrc; fallback picture source srcset (parse_srcset_for_best = largest W)
+PAGINATION: button#load-more click, EXPECTED_TOTAL=3234
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Loloi (Scraping & Spot Checking)/Code/step1.py
+
+---
+VENDOR: McLean Lighting
+URL: https://www.mcleanlighting.com
+LIBRARY: Requests+BS4
+STEP1: li.product, h3 name, img src image
+SKU: Generated MCL+category_slug[:2]+index
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: McLean Lighting Work/Code/Step1.py
+
+---
+VENDOR: Mr. Brown London
+URL: https://mrbrownhome.com
+LIBRARY: Selenium + WDM
+STEP1: ul.products.columns-4 > li.product.type-product, a.woocommerce-LoopProduct-link, h2.woocommerce-loop-product__title
+PAGINATION: base_url + "page/{N}/"
+SKU: Generated VEN[:3]+CAT[:2]+index
+COLUMNS: Category, Product URL, Image URL, Product Name, SKU (21 categories)
+CODE: Mr. Brown London (Scraping & Spot Checking)/Code/Step1.py
+
+---
+VENDOR: New Classics
+URL: https://www.newclassicfurniture.com
+LIBRARY: Selenium
+STEP1: .woolentor-grid-view-content .woolentor-product-image, a[title] name, img src image
+PAGINATION: base_url + "page/{N}/", detect via a.next.page-numbers
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: New Classics/Code/Step1.py
+
+---
+VENDOR: Niermann Weeks
+URL: https://niermannweeks.com
+LIBRARY: Requests+BS4
+STEP1: li.nw-product, a href URL, img src image, h3 name
+PAGINATION: base_url + "page/{N}/", stop on status != 200
+COLUMNS: Category, Product URL, Image URL, Product Name (no SKU)
+CODE: Niermann Weeks (Scraping & Spot Checking)/Code/step1.py
+
+---
+VENDOR: Palmer Hargrave
+URL: https://palmerhargrave.com
+LIBRARY: Requests+BS4
+STEP1: article.e-add-post, a.e-add-post-image URL, h3.e-add-post-title a name, div.e-add-item_custommeta span SKU
+PAGINATION: None (single page)
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Palmer Hargrave/Code/step1.py
+
+---
+VENDOR: Pierre Frey
+URL: https://www.pierrefrey.com
+LIBRARY: Requests+BS4
+STEP1: div.resultListItem, a.resultListItem__link, img.resultListItem__img
+       Name: resultListItem__supTitle + " " + resultListItem__title; SKU: resultListItem__subTitle
+PAGINATION: ul.pagination__list a.pagination__button--num (visit each unvisited href)
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Pierre Frey/Code/step1.py
+
+---
+VENDOR: Powell & Bonnell
+URL: https://www.powellandbonnell.com
+LIBRARY: Selenium + BS4 (infinite scroll)
+STEP1: li.product, a.woocommerce-LoopProduct-link, h2.woocommerce-loop-product__title
+       Image: div.product__img[style] CSS url() regex extract (NOT from img tag!)
+PAGINATION: Infinite scroll only
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Powell & Bonnell/Code/step1.py
+
+---
+VENDOR: Quatrine
+URL: https://quatrine.com
+LIBRARY: Requests+BS4
+STEP1: article.product-list-item, h2.product-list-item-title a URL+name, figure img image
+PAGINATION: li.next a href follow chain
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Quatrine/Code/Step1.py
+
+---
+VENDOR: Remains
+URL: https://remains.com
+LIBRARY: Selenium + hardcoded C:/chromedriver.exe
+STEP1: div.usf-results div.grid__item.grid-product, a.grid-product__link, div.grid-product__title
+       Image: img.grid-product__image via ensure_image_src() (wait up to 4.5s)
+PAGINATION: ?page=N via build_page_url(), stop when added==0 after one retry
+SPECIAL: detach=True (browser stays open), CHROMEDRIVER_PATH = C:/chromedriver.exe
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Remains (Scraping & Spot Checking)/Code/listpage.py
+
+---
+VENDOR: Rowe
+URL: https://rowefurniture.com
+LIBRARY: Requests+BS4
+STEP1: div.product-item, div.picture a URL, img.picture-img image, h2.product-title a name, div.sku
+PAGINATION: ?pagenumber=N or &pagenumber=N (check for ? first); strip # fragment before paging
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Rowe/Code/Rowe_1.py
+
+---
+VENDOR: Siemon & Salazar
+URL: https://www.siemonandsalazar.com
+LIBRARY: Playwright ASYNC (from playwright.async_api import async_playwright)
+STEP1: [data-hook="product-list-grid-item"], [data-hook="product-item-container"] URL
+       [data-hook="product-item-name"] name, wow-image img src + data-image-info JSON fallback
+SKU: Generated from name first word + CATEGORY_CODE + zero-padded index
+PAGINATION: Infinite scroll (scroll_to_bottom, max 40 scrolls)
+SPECIAL: Wix site, asyncio.run(scrape_chandeliers()), clean_image_url() strips Wix CDN suffix
+COLUMNS: Product URL, Image URL, Product Name, SKU, Category
+CODE: Siemon & Salazar/Code/Step1.py
+
+---
+VENDOR: Stahl & Band
+URL: https://stahlandband.com
+LIBRARY: Requests+BS4
+STEP1: div[class*='countergrid'], a.box URL, img src image, h3 name
+SKU: Generated STA-PU-{index}
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Stahl & Band/Code/Step1.py
+
+---
+VENDOR: Studio Twenty Seven (UPDATED)
+URL: https://shop.studiotwentyseven.com
+LIBRARY: Requests+BS4 (Shopify)
+STEP1: div.boost-pfs-filter-product-item / div.block.grid-item
+       div.block-image a URL, img.boost-pfs-filter-product-item-main-image image (data-srcset -> srcset -> src)
+       h2.block-title name (decompose .block-vendor span first), span.boost-pfs-filter-product-item-regular-price price
+SKU: Generated VEN[:3]+category[:2]+index; clean_image_url() removes _NNNx suffix
+PAGINATION: a.boost-pfs-filter-next-btn / li.next a / a[rel='next']
+COLUMNS: Product URL, Image URL, Product Name, SKU, List Price (USD)
+CODE: Studio Twenty Seven/Code/Step1.py
+
+---
+VENDOR: Sudio Bel Vetro
+URL: https://studiobelvetro.com
+LIBRARY: Requests+BS4
+STEP1: div.col.c6, a href URL, img src image, figcaption name
+PAGINATION: None (single collections page)
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Sudio Bel Vetro/Code/Step1.py
+
+---
+VENDOR: Sunpan (UPDATED)
+URL: https://sunpan.com
+LIBRARY: Selenium
+STEP1 (updated): div.card-wrapper.product-card-wrapper, XPath ./ancestor::a[1] URL
+       div.product__sku span.sku SKU, h3.card__heading.h3 name, img.card-product-image src image
+PAGINATION: base_url + "?page={N}" (hardcoded last_page variable)
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Sunpan/Code/Sunpan_step1.py
+
+---
+VENDOR: Surya (UPDATED)
+URL: https://www.surya.com/Catalog
+LIBRARY: Selenium + chromedriver_autoinstaller + Chrome Debug Port 9222
+STEP1 (updated): div[data-test-selector='productGridItem'], a[data-test-selector='productImage']
+       Image: img src/data-src/srcset -> picture source srcset -> [background-image] CSS
+       SKU: clean_sku() from span[data-test-selector='productStyleId'] / img alt / URL slug
+SCROLL: smart_slow_scroll_to_bottom() — STEP_PX=2000, STABLE=45, max 7200s
+NOTE: NO Product Name in step1 output! Only Product URL, Image URL, SKU
+SPECIAL: ensure_debug_chrome_running() auto-launches Chrome if port not open
+CODE: Surya (Scraping & Spot Checking)/Code/Surya_step1.py
+
+---
+VENDOR: Sutherland (UPDATED)
+URL: https://www.sutherlandfurniture.com
+LIBRARY: Selenium + WDM
+STEP1: div.grid__lg-quarter div.suthQuickViewCard.productCard__quickview
+       a.links__overlay URL, img.js-dynamic-image.productCard__img image
+       div.productCard__name.notranslate name
+PAGINATION: ?pg=N via build_page_url() (parse_qs + urlencode doseq=True)
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Sutherland/Code/Step1.py
+
+---
+VENDOR: Troscan (UPDATED)
+URL: https://www.troscandesign.com
+LIBRARY: Requests+BS4
+STEP1: div.thumb, deeplink attr -> URL fragment {URL}#{deeplink}
+       div.name name, img src image
+SKU: Generated TRO-SO-{index}
+PAGINATION: None (single page)
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Troscan/Code/Step1.py
+
+---
+VENDOR: Utter Most (UPDATED)
+URL: https://uttermost.com
+LIBRARY: Playwright sync (from playwright.sync_api import sync_playwright)
+STEP1: div.item-root-Chs, a.item-name-LPg span name, p span.font-semibold SKU
+       a.item-images--uD URL, img[class*='rounded-'] data-src/src image
+TOTAL_PAGES: div.css-1m76rdz-singleValue text ("X of N") -> int
+PAGINATION: URL_TEMPLATE.format(page=N)
+SPECIAL: Blocks stylesheet/font/media resources for speed
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Utter Most/Code/Step1.py
+
+---
+VENDOR: Verellen (UPDATED)
+URL: https://verellen.biz
+LIBRARY: Selenium + WDM, headless + disable images pref
+STEP1: .product-widget / .product-item / .product-card (multiple fallbacks)
+       Name from multiple selectors, URL from a.p-0 / a[href*='/products/'] / a[href]
+PAGINATION: .pagination .button-wrapper button (zero-padded "01","02",...), click each
+FORMAT: NEW — Manufacturer="Verellen", Source=URL, Product Name (no Image or SKU)
+COLUMNS: Manufacturer, Source, Product Name
+CODE: Verellen/Code/step1.py
+
+---
+VENDOR: Vill & House (UPDATED)
+URL: https://vandh.com (BigCommerce)
+LIBRARY: Requests+BS4
+STEP1: li.product, figure.card-figure a URL, div.card-img-container img image
+       h3.card-title a name, div.card-text strong SKU (strip "SKU :")
+PAGINATION: ?page=N
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Vill & House (Scraping & Spot Checking)/Code/Villa_house1.py
+
+---
+VENDOR: Wells Abbott (UPDATED)
+URL: https://www.wellsabbott.com
+LIBRARY: Playwright sync
+STEP1: li.usf-sr-product (via BS4 on page.content()), h3.card__heading a.full-unstyled-link URL+name
+       .card__media img or img -> // -> https: prefix fix
+PAGINATION: Lazy scroll (5 passes), no numbered pages
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Wells Abbott/Code/Step1.py
+
+---
+VENDOR: Worlds Away (UPDATED)
+URL: https://www.worlds-away.com
+LIBRARY: Selenium + chromedriver_autoinstaller
+STEP1: li.product, div.card-body a URL+name
+       Image: 5 selectors tried (card-image, card-img-top, woocommerce_thumbnail, wp-post-image, img)
+       EXTRA: div.card-dimensions-standard -> Size; div.card-desc -> Description
+PAGINATION: Infinite scroll (3-round stable stop, MAX_SCROLL_ROUNDS=200)
+COLUMNS: Category, Product URL, Image URL, Product Name, Size, Description (2 EXTRA vs standard!)
+CODE: Worlds Away (Scraping & Spot Checking)/Code/Step1.py
+
+---
+VENDOR: Zuo (UPDATED)
+URL: https://www.zuomod.com
+LIBRARY: Selenium + CDP injection (navigator.webdriver = undefined)
+STEP1: li.product-item / div.product-item, a.product-item-link URL+name
+       img.product-image-photo data-src/src image
+PAGINATION: a.action.next / li.pages-item-next a href; per-page limiter set to 160
+FORMAT: NEW — Manufacturer="Zuo", Source=URL, Product Name, Image URL, Category
+COLUMNS: Manufacturer, Source, Product Name, Image URL, Category
+CODE: Zuo/Code/Step1.py
+
+---
+VENDOR: Invisible Collection
+URL: https://theinvisiblecollection.com
+LIBRARY: Selenium + WDM
+STEP1: .ais-Hits-item article.hit (Algolia), a.vsz-product-container[data-product_name]
+       img.pro-front-img[src], .wcpbc-price / .woocommerce-Price-amount for price
+PAGINATION: .ais-Pagination-item--nextPage a (check disabled class first)
+SPECIAL: nuke_popups() JS removes overlays > z-index 1000; wait_for_real_products() up to 120s
+COLUMNS: Product URL, Image URL, Product Name, List Price
+CODE: Invisible Collection/invisible_step1.py (ROOT folder, not Code/)
+
+---
+VENDOR: Bennett
+URL: https://www.bennetttothetrade.com
+LIBRARY: Requests+BS4 (Shopify)
+STEP1: div.card-wrapper.product-card-wrapper, h3.card__heading.h5 a.full-unstyled-link URL+name
+       div.media img src (// -> https: fix)
+NOTE: SKU = Product Name (site has no real SKU field; name is used as SKU)
+PAGINATION: ?page=N
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: Bennett (Scraping & Spot Checking)/Code/step1.py
+
+---
+VENDOR: CR Laine
+URL: https://www.crlaine.com
+LIBRARY: Selenium + WDM (custom PHP site)
+STEP1: div.style_thumbs / div[stylename], a.pageLoc URL, img src image
+       div.stylename name + last div.stylenumber text; first SKU-like stylenumber = SKU
+PAGINATION: Infinite scroll (scroll until count stable, MAX_SCROLLS=60, pause=4s)
+COLUMNS: Product URL, Image URL, Product Name, SKU
+CODE: CR Laine/Code/CR_Laine1.py (also CR_Laine2.py, CR_Laine_OthersCategory.py, etc.)
+
+---
+VENDOR: Highland House
+URL: https://highlandhousefurniture.com
+LIBRARY: Selenium (no WDM, hardcoded no path)
+STEP1: li.prodListingDiv div.prodSearchDiv, a[href] URL, img.prodSearchImage src image
+       div[style*='margin:5px 0;'] strong -> SKU (NO Product Name extracted!)
+PAGINATION: Try span.viewAll.prodPageNavItem click first; else span.nextPage.prodPageNavItem
+SPECIAL: URL uses ?TypeID=N; column casing is "Product Url, Image Url, Sku" (lowercase Url!)
+COLUMNS: Product Url, Image Url, Sku (no Product Name!)
+CODE: Highland House/Highland House (Scraping & Spot Checking)/Code/Highland_House_1.py
+
+---
+VENDOR: Johnathan Brown Inc
+URL: https://jonathanbrowninginc.com
+LIBRARY: Requests+BS4
+STEP1: li.grid-item data attributes: data-product-name, data-deeplink, data-category, data-resting
+       URL: {BASE_URL}/products/{data-category}?deep={data-deeplink}
+       Image: BASE_URL + data-resting; Name: data-product-name
+PAGINATION: None (all products in single page DOM)
+COLUMNS: Product URL, Image URL, Product Name (no SKU)
+CODE: Johnathan Brown Inc/Code/Step1.py
+

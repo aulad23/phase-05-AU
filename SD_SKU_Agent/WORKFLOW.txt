@@ -1,0 +1,36 @@
+AGENT WORKFLOW — PHASE-05 (AU)
+================================
+
+FOLDER STRUCTURE:
+-----------------
+Agent/
+├── Chat/           ← Vendor name + instruction দিন এখানে
+├── Client_Update/  ← Client feedback files রাখুন
+├── Memory/         ← Agent এর সব knowledge জমা থাকে
+├── Code/           ← Generated scripts (per vendor folder)
+├── Demo/           ← Demo output — confirm করতে হবে
+├── Data/           ← Final Excel output (per vendor)
+├── Vendor_List/    ← Vendor List Excel copy রাখুন
+└── Logs/           ← কোন vendor কখন হলো, কত সময় লাগলো
+
+STEP-BY-STEP FLOW:
+------------------
+STEP 1: আপনি Chat file-এ vendor + task লিখুন
+        অথবা সরাসরি বলুন
+
+STEP 2: Agent → Vendor_List থেকে URL + Category খোঁজে
+        Agent → Memory থেকে similar pattern নেয়
+        Agent → Code/ এ scraper.py বানায় (single file)
+
+STEP 3: Agent → Demo/ এ sample output রাখে
+        Agent বলে: "Demo ready, confirm করুন?"
+
+STEP 4A: আপনি CONFIRM দিলে → Full run → Data/ এ Excel save
+STEP 4B: আপনি instruction দিলে → Chat file দেখে code update → আবার Demo
+
+STEP 5: আপনি "Done" বললে → Git push (শুধু .py files)
+
+GIT PUSH RULE:
+--------------
+"Done" বললেই push — অন্য কোনো সময় না
+শুধু .py files push হবে — Excel কখনো না
